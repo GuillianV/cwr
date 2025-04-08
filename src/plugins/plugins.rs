@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_dev_tools::DevToolsPlugin;
+use crate::plugins::debug;
 
-mod debug;
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
