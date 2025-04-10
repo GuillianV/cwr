@@ -7,3 +7,11 @@ pub enum AppState {
     Loading,
     Game,
 }
+
+#[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum LoadingState {
+    #[default]
+    LoadingGrid,
+    LoadingChunk,
+    LoadingTerrain,
+}
