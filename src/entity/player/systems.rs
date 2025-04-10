@@ -1,10 +1,10 @@
-use bevy::{input::mouse::MouseMotion, prelude::*};
+use bevy::{ecs::entity, input::mouse::MouseMotion, prelude::*};
 
-use crate::components::player::{Player, PlayerCamera};
-use crate::resouces::movement_settings::MovementSettings;
-use crate::utils::maths::{combine_direction_with_rotation_to_eulers, vec2_to_degrees};
-
-
+use crate::{entity::player::{
+    components::{Player, PlayerCamera},
+    resources::MovementSettings,
+}, events::EntityMovedEvent};
+use crate::util::math::rotations::{combine_direction_with_rotation_to_eulers, vec2_to_degrees};
 
 pub fn init_player(
     mut commands: Commands,
@@ -34,8 +34,6 @@ pub fn init_player(
         Transform::default(),
     ));
 }
-
-
 
 pub fn player_set_camera_movement(
     settings: Res<MovementSettings>,
@@ -83,6 +81,7 @@ pub fn player_set_camera_movement(
 pub fn player_set_movement(
     mut player_query: Query<(&mut Transform, &mut Player), With<Player>>,
     mut q_camera_data: Query<&mut PlayerCamera, With<PlayerCamera>>,
+    mut entity_moved_event_writer: EventWriter<EntityMovedEvent>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
 ) {
@@ -146,6 +145,14 @@ pub fn player_set_movement(
             player.position.y,
             old_position.z + combined_direction.1 * player.speed * time.delta_secs(),
         );
+
+        if new_position != transform.translation {
+            entity_moved_event_writer.send(EntityMovedEvent {
+                entity: "player".to_string(),
+                position: new_position,
+            });
+        }
+
         transform.translation = transform
             .translation
             .lerp(new_position, player.inertia * time.delta_secs());
@@ -167,5 +174,6 @@ pub fn player_apply_movement(
             camera_data.rotation,
             settings.camera_rotation_speed * time.delta_secs(),
         );
+
     }
 }

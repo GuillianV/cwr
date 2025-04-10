@@ -1,14 +1,12 @@
+
 use bevy::prelude::*;
 use bevy_dev_tools::DevToolsPlugin;
-use crate::plugins::debug;
+pub mod debug;
 
-pub struct AppPlugin;
+pub struct DevPlugin;
 
-impl Plugin for AppPlugin {
+impl Plugin for DevPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((
-            DefaultPlugins,
-        ));
 
         #[cfg(debug_assertions)]
         app.add_plugins((
