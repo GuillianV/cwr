@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use super::components::{Chunk, Chunks};
-use crate::world::events::{ChunkFullfilledEvent, GridCellLoadedEvent};
+use crate::game::world::events::{ChunkFullfilledEvent, GridCellLoadedEvent};
 
 pub fn init_chunks(mut commands: Commands) {
     let chunks = Chunks::default();

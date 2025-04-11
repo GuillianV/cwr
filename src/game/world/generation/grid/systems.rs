@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use super::components::{Coords, Grid};
-use crate::{events::EntityMovedEvent, world::events::GridCellLoadedEvent};
+use crate::{events::EntityMovedEvent, game::world::events::GridCellLoadedEvent};
 
 pub fn init_grid(
     mut commands: Commands,

@@ -1,6 +1,6 @@
 use bevy::{ecs::entity, input::mouse::MouseMotion, prelude::*};
 
-use crate::{entity::player::{
+use crate::{game::entity::player::{
     components::{Player, PlayerCamera},
     resources::MovementSettings,
 }, events::EntityMovedEvent};

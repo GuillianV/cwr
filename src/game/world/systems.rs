@@ -1,4 +1,4 @@
-use crate::world::components::World;
+use crate::game::world::components::World;
 use bevy::prelude::*;
 
 pub fn init_world(mut commands: Commands) {

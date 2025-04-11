@@ -1,6 +1,6 @@
 use bevy::{prelude::*, utils::HashMap};
 
-use crate::world::grid::components::Coords;
+use crate::game::world::generation::grid::components::Coords;
 
 #[derive(Component)]
 pub struct Chunks {

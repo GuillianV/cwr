@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use noise::utils::PlaneMapBuilder;
 use noise::{core::perlin::perlin_2d, permutationtable::PermutationTable};
 
-use crate::world::noise::components::WorldNoiseMap;
-use crate::world::noise::resources::NoiseMapSettings;
+use crate::game::world::generation::noise::components::WorldNoiseMap;
+use crate::game::world::generation::noise::resources::NoiseMapSettings;
 
 pub fn init_noise_map(mut commands: Commands, noise_map_settings: Res<NoiseMapSettings>) {
     let hasher = PermutationTable::new(noise_map_settings.seed);

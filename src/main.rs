@@ -1,12 +1,11 @@
 use bevy::prelude::*;
 
 mod dev;
-mod entity;
 mod events;
 mod systems;
 mod util;
 mod states;
-mod world;
+mod game;
 
 use systems::*;
 

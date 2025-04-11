@@ -1,9 +1,9 @@
 
 use bevy::prelude::*;
 
-use crate::world::events::ChunkFullfilledEvent;
+use crate::game::world::events::ChunkFullfilledEvent;
 
-pub fn init_terrain(
+pub fn update_terrain(
     mut chunk_fullfilled_event_reader: EventReader<ChunkFullfilledEvent>,
 ) {
 

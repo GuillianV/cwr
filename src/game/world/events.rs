@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::{chunk::components::Chunk, grid::components::Coords};
+use super::{generation::chunk::components::Chunk, generation::grid::components::Coords};
 
 #[derive(Event)]
 pub struct GridCellLoadedEvent {
