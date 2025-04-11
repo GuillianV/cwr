@@ -2,16 +2,14 @@ use bevy::prelude::*;
 
 mod dev;
 mod events;
+mod game;
+mod main_menu;
+mod states;
 mod systems;
 mod util;
-mod states;
-mod game;
 
 use systems::*;
 
 fn main() {
-    App::new()
-        .init_state::<states::AppState>()
-        .add_plugins(AppPlugin)
-        .run();
+    App::new().add_plugins(AppPlugin).run();
 }

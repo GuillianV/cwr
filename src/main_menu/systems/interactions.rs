@@ -1,0 +1,36 @@
+use bevy::prelude::*;
+
+use crate::{
+    main_menu::{components::PlayButton, styles::*},
+    states::AppState,
+};
+
+pub fn on_click(
+    click: Trigger<Pointer<Click>>,
+    mut button_query: Query<&mut BackgroundColor, With<PlayButton>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+) {
+    if let Ok(mut color) = button_query.get_mut(click.entity()) {
+        *color = PRESSED_BUTTON.into();
+        app_state_next_state.set(AppState::Loading);
+
+    }
+}
+
+pub fn on_hover(
+    hover: Trigger<Pointer<Over>>,
+    mut button_query: Query<&mut BackgroundColor, With<PlayButton>>,
+) {
+    if let Ok(mut color) = button_query.get_mut(hover.entity()) {
+        *color = HOVERED_BUTTON.into();
+    }
+}
+
+pub fn on_hover_out(
+    hover: Trigger<Pointer<Out>>,
+    mut button_query: Query<&mut BackgroundColor, With<PlayButton>>,
+) {
+    if let Ok(mut color) = button_query.get_mut(hover.entity()) {
+        *color = NORMAL_BUTTON.into();
+    }
+}
