@@ -14,8 +14,8 @@ pub fn init_player(
     commands.spawn((
         Player {
             position: Vec3::new(0.0, 2.0, 0.0),
-            speed: 75.0,
-            inertia: 5.,
+            speed: 175.0,
+            inertia: 8.,
         },
         Mesh3d(meshes.add(Capsule3d::default())),
         MeshMaterial3d(materials.add(Color::srgb(0.4, 0.2, 0.3))),

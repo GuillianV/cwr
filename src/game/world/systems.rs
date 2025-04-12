@@ -11,3 +11,4 @@ pub fn init_world(mut commands: Commands) {
         brightness: world_data_clone.light,
     });
 }
+

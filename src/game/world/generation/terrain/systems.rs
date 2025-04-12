@@ -11,8 +11,6 @@ pub fn update_terrain(
 ) {
 
     for chunk_fullfilled_event in chunk_fullfilled_event_reader.read() {
-        println!("Chunk fullfilled {0}", chunk_fullfilled_event.chunk.cells.len());
-
             for coord in chunk_fullfilled_event.chunk.clone().cells {
                 spawn_voxel(&mut commands, &mut meshes, &mut materials, &coord);
             }

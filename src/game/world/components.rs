@@ -4,6 +4,7 @@ pub struct World {
     pub light: f32,
 }
 
+
 #[derive(Component, Clone)]
 pub struct Voxel {
     pub position: Vec3,

@@ -14,7 +14,6 @@ pub fn update_chunks(
         let coords = &grid_cell_loaded_event.coords;
 
         for chunk in chunks.update_grid(coords) {
-            println!("Chunk fullfilledaa {0}", chunk.cells.len());
             chunk_fullfilled_event_writer.send(ChunkFullfilledEvent { chunk });
         }
     }

@@ -1,4 +1,16 @@
-use bevy::prelude::*;
+use std::collections::HashSet;
+use binary_greedy_meshing as bgm;
+use std::collections::BTreeSet;
+
+use bevy::{
+    asset::RenderAssetUsages,
+    prelude::*,
+    render::{
+        mesh::{Indices, MeshVertexAttribute, PrimitiveTopology, VertexAttributeValues},
+        primitives::Aabb,
+        render_resource::VertexFormat,
+    },
+};
 
 use crate::{game::world::components::Voxel, states::AppState};
 
@@ -31,33 +43,47 @@ pub fn init_generation(
 
     commands.spawn(chunks);
 
-    for chunk in fullfilled_chunks {
-        for coord in chunk.cells {
-            spawn_voxel(&mut commands, &mut meshes, &mut materials, &coord);
-        }
-    }
+    let mut voxels = [0; bgm::CS_P3];
+    // Add 2 voxels at position 0;0;0 and 0;1;0
+    voxels[bgm::pad_linearize(0, 0, 0)] = 1;
+    voxels[bgm::pad_linearize(0, 1, 0)] = 1;
+    // Contain useful buffers that can be cached and cleared 
+    // with mesh_data.clear() to avoid re-allocation
+    let mut mesh_data = bgm::MeshData::new();
+    // Does the meshing, mesh_data.quads is the output
+    // transparent block values are signaled by putting them in the BTreeSet
+    bgm::mesh(&voxels, &mut mesh_data, BTreeSet::default());
+
+    println!("{:?}", mesh_data.quads);
+
+    // //Test multimesh
+    // let mesh = meshes.add();
+    // let material = materials.add(StandardMaterial {
+    //     base_color: Color::rgb(0.8, 0.7, 0.6),
+    //     ..Default::default()
+    // });
+
+    // spawn_voxel(
+    //     &mut commands,
+    //     mesh.clone(),
+    //     material.clone(),
+    //     &Coords::new(0, 0),
+    // );
 
     app_state_next_state.set(AppState::Game);
 }
 
+
+
 pub fn spawn_voxel(
     commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<StandardMaterial>>,
+    mesh: Handle<Mesh>,
+    material: Handle<StandardMaterial>,
     coord: &Coords,
 ) {
-    let voxel_data = Voxel {
-        position: Vec3::new(coord.x as f32, 0.0, coord.z as f32),
-        size: Vec3::new(1.0, 1.0, 1.0),
-        color: Color::srgb(0.1, 0.1, 0.1),
-    };
-
-    let voxel_data_clone = voxel_data.clone();
-
     commands.spawn((
-        voxel_data,
-        Mesh3d(meshes.add(Cuboid::from_size(voxel_data_clone.size))),
-        MeshMaterial3d(materials.add(voxel_data_clone.color)),
-        Transform::from_translation(voxel_data_clone.position),
+        Mesh3d(mesh),
+        MeshMaterial3d(material),
+        Transform::from_translation(Vec3::new(coord.x as f32, 0.0, coord.z as f32)),
     ));
 }

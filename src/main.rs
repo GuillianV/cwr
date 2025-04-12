@@ -1,4 +1,10 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    render::{
+        RenderPlugin,
+        settings::{RenderCreation, WgpuFeatures, WgpuSettings},
+    },
+};
 
 mod dev;
 mod events;

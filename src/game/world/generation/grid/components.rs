@@ -12,7 +12,7 @@ impl Default for Grid {
     fn default() -> Self {
         Self {
             grid_2d: HashMap::<String, Coords>::new(),
-            watch_distance: 100,
+            watch_distance: 16,
             last_position: Coords::new(0, 0),
         }
     }
@@ -100,7 +100,7 @@ pub struct Coords {
 
 impl Coords {
     // Constructeur pour créer un nouveau Vec3
-    fn new(x: i32, z: i32) -> Self {
+    pub fn new(x: i32, z: i32) -> Self {
         Coords { x, z }
     }
 }
