@@ -23,9 +23,9 @@ pub fn update_terrain(
 }
 
 pub fn spawn_voxel(
-    mut commands: &mut Commands,
-    mut meshes: &mut ResMut<Assets<Mesh>>,
-    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+     commands: &mut Commands,
+     meshes: &mut ResMut<Assets<Mesh>>,
+     materials: &mut ResMut<Assets<StandardMaterial>>,
     coord: &Coords,
 ) {
     let voxel_data = Voxel {

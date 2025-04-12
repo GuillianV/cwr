@@ -3,8 +3,8 @@ use bevy::prelude::*;
 use crate::main_menu::components::*;
 use crate::main_menu::{styles::*, systems::interactions::*};
 
-pub fn spawn_layout(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let main_menu_entity = build_layout(commands, &asset_server);
+pub fn spawn_layout(commands: Commands, ) {//asset_server: Res<AssetServer>
+    build_layout(commands,);// &asset_server
 }
 
 pub fn despawn_layout(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
@@ -13,7 +13,7 @@ pub fn despawn_layout(mut commands: Commands, main_menu_query: Query<Entity, Wit
     }
 }
 
-pub fn build_layout(mut commands: Commands, asset_server: &Res<AssetServer>) {
+pub fn build_layout(mut commands: Commands, ) {//asset_server: &Res<AssetServer>
     let container_node = Node {
         width: Val::Percent(100.0),
         height: Val::Percent(100.0),

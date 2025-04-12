@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::components::{Chunk, Chunks};
+use super::components::Chunks;
 use crate::game::world::events::{ChunkFullfilledEvent, GridCellLoadedEvent};
 
 pub fn update_chunks(

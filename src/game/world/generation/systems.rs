@@ -37,14 +37,13 @@ pub fn init_generation(
         }
     }
 
-    
     app_state_next_state.set(AppState::Game);
 }
 
 pub fn spawn_voxel(
-    mut commands: &mut Commands,
-    mut meshes: &mut ResMut<Assets<Mesh>>,
-    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    commands: &mut Commands,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<StandardMaterial>>,
     coord: &Coords,
 ) {
     let voxel_data = Voxel {
@@ -61,5 +60,4 @@ pub fn spawn_voxel(
         MeshMaterial3d(materials.add(voxel_data_clone.color)),
         Transform::from_translation(voxel_data_clone.position),
     ));
-
 }
