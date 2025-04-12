@@ -36,6 +36,7 @@ impl Chunks {
         let modulo_z = (z - rest_z) / self.chunk_size.y as i32;
 
         let chunk_id = format!("{0},{1}", modulo_x, modulo_z);
+
         if !self.chunk_list.contains_key(&chunk_id) {
             self.chunk_list.insert(
                 chunk_id.clone(),
@@ -48,10 +49,25 @@ impl Chunks {
 
         let chunk = self.chunk_list.get_mut(&chunk_id).unwrap();
         chunk.cells.push(coords.clone());
-        println!("Chunk update {0},{1}, coords {2},{3} , chunck size {4}", modulo_x, modulo_z, coords.x, coords.z, chunk.cells.len());
+
+        let reach_size_x = if x < 0 {
+            self.chunk_size.x as i32 - 1
+        } else {
+            self.chunk_size.x as i32
+        };
+        let reach_size_z = if z < 0 {
+            self.chunk_size.y as i32 - 1
+        } else {
+            self.chunk_size.y as i32
+        };
+
         let mut fullfilled_chunks = Vec::<Chunk>::new();
-        if chunk.cells.len() == self.chunk_size.x as usize * self.chunk_size.y as usize {
-            println!("Chunk fullfilled ID {0}, len {1}", chunk_id, chunk.cells.len());
+        if chunk.cells.len() == reach_size_x as usize * reach_size_z as usize {
+            println!(
+                "Chunk fullfilled ID {0}, len {1}",
+                chunk_id,
+                chunk.cells.len()
+            );
             chunk.fullfilled = true;
             fullfilled_chunks.push(chunk.clone());
         }

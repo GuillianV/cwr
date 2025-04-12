@@ -1,14 +1,16 @@
 use bevy::prelude::*;
 
-use crate::states::AppState;
+use crate::{game::world::components::Voxel, states::AppState};
 
 use super::{
     chunk::components::{Chunk, Chunks},
-    grid::components::Grid,
+    grid::components::{Coords, Grid},
 };
 
 pub fn init_generation(
     mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
     app_state_next_state.set(AppState::Loading);
@@ -30,6 +32,34 @@ pub fn init_generation(
     commands.spawn(chunks);
 
     for chunk in fullfilled_chunks {
-        println!("Chunk fullfilled {0}", chunk.cells.len());
+        for coord in chunk.cells {
+            spawn_voxel(&mut commands, &mut meshes, &mut materials, &coord);
+        }
     }
+
+    
+    app_state_next_state.set(AppState::Game);
+}
+
+pub fn spawn_voxel(
+    mut commands: &mut Commands,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    coord: &Coords,
+) {
+    let voxel_data = Voxel {
+        position: Vec3::new(coord.x as f32, 0.0, coord.z as f32),
+        size: Vec3::new(1.0, 1.0, 1.0),
+        color: Color::srgb(0.1, 0.1, 0.1),
+    };
+
+    let voxel_data_clone = voxel_data.clone();
+
+    commands.spawn((
+        voxel_data,
+        Mesh3d(meshes.add(Cuboid::from_size(voxel_data_clone.size))),
+        MeshMaterial3d(materials.add(voxel_data_clone.color)),
+        Transform::from_translation(voxel_data_clone.position),
+    ));
+
 }

@@ -9,8 +9,8 @@ pub mod terrain;
 use crate::states::AppState;
 
 use super::generation::{
-    chunk::systems::{init_chunks, update_chunks},
-    grid::systems::{init_grid, update_grid},
+    chunk::systems::update_chunks,
+    grid::systems::update_grid,
     noise::{resources::NoiseMapSettings, systems::init_noise_map},
     systems::init_generation,
     terrain::systems::update_terrain,

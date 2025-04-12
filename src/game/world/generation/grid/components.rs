@@ -12,7 +12,7 @@ impl Default for Grid {
     fn default() -> Self {
         Self {
             grid_2d: HashMap::<String, Coords>::new(),
-            watch_distance: 20,
+            watch_distance: 100,
             last_position: Coords::new(0, 0),
         }
     }
