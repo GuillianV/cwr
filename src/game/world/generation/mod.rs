@@ -6,8 +6,9 @@ pub mod constants;
 pub mod noise;
 pub mod pos;
 pub mod systems;
+pub mod terrain;
 
-use crate::states::AppState;
+use crate::states::{AppState, LoadingState};
 
 use super::generation::noise::{resources::NoiseMapSettings, systems::init_noise_map};
 
@@ -18,7 +19,7 @@ impl Plugin for WorldGenerationPlugin {
         app.init_resource::<NoiseMapSettings>()
         .add_plugins(chunks::WorldGenerationChunksPlugin)
         .add_systems(
-            OnEnter(AppState::Loading),
+            OnEnter(LoadingState::LoadingMesh),
             (init_noise_map, setup_gen_thread),
         );
     }

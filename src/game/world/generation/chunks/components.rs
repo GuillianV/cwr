@@ -1,13 +1,31 @@
-use std::ops::{Deref, DerefMut};
+use bevy::{
+    asset::RenderAssetUsages,
+    log::info_span,
+    render::mesh::{Indices, Mesh, PrimitiveTopology},
+};
+use binary_greedy_meshing as bgm;
+use itertools::Itertools;
+use std::{
+    collections::BTreeSet,
+    ops::{Deref, DerefMut},
+};
 
-use crate::game::world::generation::{
-    constants::{CHUNKP_S1, CHUNKP_S2, CHUNKP_S3},
-    pos::ChunkedPos,
+use crate::{
+    game::world::{
+        block::components::{Block, Face},
+        generation::{
+            constants::{CHUNK_S1, CHUNKP_S1, CHUNKP_S2, CHUNKP_S3, MASK_6, MASK_XYZ},
+            pos::{ChunkedPos, ColedPos},
+        },
+    },
+    render::constants::ATTRIBUTE_VOXEL_DATA,
+    util::palette::Palette,
 };
 
 #[derive(Debug)]
 pub struct Chunk {
     pub data: PackedUints,
+    pub palette: Palette<Block>,
 }
 
 pub fn linearize(x: usize, y: usize, z: usize) -> usize {
@@ -19,27 +37,147 @@ pub fn pad_linearize(x: usize, y: usize, z: usize) -> usize {
 }
 
 impl Chunk {
-    pub fn get(&self, (x, y, z): ChunkedPos) {}
-
-    pub fn set(&mut self, (x, y, z): ChunkedPos) {
-        let idx = pad_linearize(x, y, z);
+    pub fn get(&self, (x, y, z): ChunkedPos) -> &Block {
+        &self.palette[self.data.get(pad_linearize(x, y, z))]
     }
 
-    pub fn set_yrange(&mut self, (x, top, z): ChunkedPos, height: usize) {
+    pub fn set(&mut self, (x, y, z): ChunkedPos, block: Block) {
+        let idx = pad_linearize(x, y, z);
+        self.data.set(idx, self.palette.index(block));
+    }
+
+    pub fn set_yrange(&mut self, (x, top, z): ChunkedPos, height: usize, block: Block) {
+        let value = self.palette.index(block);
+        // Note: we do end+1 because set_range(_step) is not inclusive
         self.data.set_range_step(
             pad_linearize(x, top - height, z),
             pad_linearize(x, top, z) + 1,
             CHUNKP_S2,
-            0,
+            value,
         );
+    }
+
+    // Used for efficient construction of mesh data
+    pub fn copy_column(&self, buffer: &mut [Block], (x, z): ColedPos, lod: usize) {
+        let start = pad_linearize(x, 0, z);
+        let mut i = 0;
+        for idx in (start..(start + CHUNK_S1)).step_by(lod) {
+            buffer[i] = self.palette[self.data.get(idx)];
+            i += 1;
+        }
+    }
+
+    pub fn top(&self, (x, z): ColedPos) -> (&Block, usize) {
+        for y in (0..CHUNK_S1).rev() {
+            let b_idx = self.data.get(pad_linearize(x, y, z));
+            if b_idx > 0 {
+                return (&self.palette[b_idx], y);
+            }
+        }
+        (&self.palette[0], 0)
+    }
+
+    pub fn set_if_empty(&mut self, (x, y, z): ChunkedPos, block: Block) -> bool {
+        let idx = pad_linearize(x, y, z);
+        false
+        // self.data.set(idx, self.palette.index(block));
+        // true
+    }
+}
+
+impl From<&[Block]> for Chunk {
+    fn from(values: &[Block]) -> Self {
+        let mut palette = Palette::new();
+        let values = values
+            .iter()
+            .map(|v| palette.index(v.clone()))
+            .collect_vec();
+        let data = PackedUints::from(values.as_slice());
+        Chunk { data, palette }
     }
 }
 
 impl Chunk {
     pub fn new() -> Self {
+        let mut palette = Palette::new();
         Chunk {
             data: PackedUints::new(CHUNKP_S3),
+            palette: palette,
         }
+    }
+}
+
+impl Chunk {
+    pub fn voxel_data_lod(&self, lod: usize) -> Vec<u16> {
+        let voxels = self.data.unpack_u16();
+        if lod == 1 {
+            return voxels;
+        }
+        let mut res = vec![0; CHUNKP_S3];
+        for x in 0..CHUNK_S1 {
+            for y in 0..CHUNK_S1 {
+                for z in 0..CHUNK_S1 {
+                    let lod_i = pad_linearize(x / lod, y / lod, z / lod);
+                    if res[lod_i] == 0 {
+                        res[lod_i] = voxels[pad_linearize(x, y, z)];
+                    }
+                }
+            }
+        }
+        res
+    }
+
+    /// Doesn't work with lod > 2, because chunks are of size 62 (to get to 64 with padding) and 62 = 2*31
+    /// TODO: make it work with lod > 2 if necessary (by truncating quads)
+    pub fn create_face_meshes(&self, lod: usize) -> [Option<Mesh>; 6] {
+        // Gathering binary greedy meshing input data
+        let mesh_data_span = info_span!("mesh voxel data", name = "mesh voxel data").entered();
+        let voxels = self.voxel_data_lod(lod);
+        let mut mesh_data = bgm::MeshData::new();
+        mesh_data_span.exit();
+        let mesh_build_span = info_span!("mesh build", name = "mesh build").entered();
+        let transparents =
+            BTreeSet::from_iter(self.palette.iter().enumerate().filter_map(|(i, block)| {
+                if i != 0 && !block.is_opaque() {
+                    Some(i as u16)
+                } else {
+                    None
+                }
+            }));
+        bgm::mesh(&voxels, &mut mesh_data, transparents);
+        let mut meshes = core::array::from_fn(|_| None);
+        for (face_n, quads) in mesh_data.quads.iter().enumerate() {
+            let mut voxel_data: Vec<[u32; 2]> = Vec::with_capacity(quads.len() * 4);
+            let indices = bgm::indices(quads.len());
+            let face: Face = face_n.into();
+            for quad in quads {
+                let voxel_i = (quad >> 32) as usize;
+                let w = MASK_6 & (quad >> 18);
+                let h = MASK_6 & (quad >> 24);
+                let xyz = MASK_XYZ & quad;
+                let block = self.palette[voxel_i];
+                let layer = 0;
+                let color = 0b010_101_001;
+                let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);
+                let quad_info = (layer << 12) | (color << 3) | face_n as u32;
+                voxel_data.extend_from_slice(&[
+                    [vertices[0], quad_info],
+                    [vertices[1], quad_info],
+                    [vertices[2], quad_info],
+                    [vertices[3], quad_info],
+                ]);
+            }
+            meshes[face_n] = Some(
+                Mesh::new(
+                    PrimitiveTopology::TriangleList,
+                    RenderAssetUsages::RENDER_WORLD,
+                )
+                .with_inserted_attribute(ATTRIBUTE_VOXEL_DATA, voxel_data)
+                .with_inserted_indices(Indices::U32(indices)),
+            )
+        }
+        mesh_build_span.exit();
+        meshes
     }
 }
 

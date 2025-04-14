@@ -14,7 +14,7 @@ use crate::events::EntityMovedEvent;
 use crate::game::GamePlugin;
 use crate::main_menu::MainMenuPlugin;
 use crate::render::ChunkRenderPlugin;
-use crate::states::AppState;
+use crate::states::{AppState, LoadingState};
 
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
@@ -27,6 +27,7 @@ impl Plugin for AppPlugin {
             ..default()
         }))
         .init_state::<AppState>()
+        .init_state::<LoadingState>()
         .add_event::<EntityMovedEvent>()
         .add_plugins(ChunkRenderPlugin)
         // .add_plugins(DevPlugin)

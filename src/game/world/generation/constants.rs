@@ -10,5 +10,5 @@ pub const MAX_GEN_HEIGHT: usize = 400;
 pub const WATER_H: i32 = 61;
 pub const Y_CHUNKS: usize = MAX_HEIGHT/CHUNK_S1;
 
-const MASK_6: u64 = 0b111111;
-const MASK_XYZ: u64 = 0b111111_111111_111111;
+pub const MASK_6: u64 = 0b111111;
+pub const MASK_XYZ: u64 = 0b111111_111111_111111;

@@ -1,7 +1,7 @@
 use bevy::{input::mouse::MouseMotion, prelude::*};
 
 use crate::game::world::realm::resources::Realm;
-use crate::util::math::rotations::{combine_direction_with_rotation_to_eulers, vec2_to_degrees};
+use crate::util::rotations::{combine_direction_with_rotation_to_eulers, vec2_to_degrees};
 use crate::{
     events::EntityMovedEvent,
     game::entity::player::{
