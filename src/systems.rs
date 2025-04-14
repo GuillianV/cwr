@@ -13,6 +13,7 @@ pub struct AppPlugin;
 use crate::events::EntityMovedEvent;
 use crate::game::GamePlugin;
 use crate::main_menu::MainMenuPlugin;
+use crate::render::ChunkRenderPlugin;
 use crate::states::AppState;
 
 impl Plugin for AppPlugin {
@@ -27,6 +28,7 @@ impl Plugin for AppPlugin {
         }))
         .init_state::<AppState>()
         .add_event::<EntityMovedEvent>()
+        .add_plugins(ChunkRenderPlugin)
         // .add_plugins(DevPlugin)
         .add_plugins(MainMenuPlugin)
         .add_plugins(GamePlugin);

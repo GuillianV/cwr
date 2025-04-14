@@ -10,6 +10,9 @@ bevy = "0.15.3"
 bevy_dev_tools  = "0.15.3"
 noise = "0.9"
 binary-greedy-meshing = "0.3.6"
+itertools = "*"
+dashmap = "*"
+parking_lot = "*"
 
 # Enable a small amount of optimization in the dev profile.
 [profile.dev]

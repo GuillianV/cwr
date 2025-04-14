@@ -5,9 +5,3 @@ pub struct World {
 }
 
 
-#[derive(Component, Clone)]
-pub struct Voxel {
-    pub position: Vec3,
-    pub size: Vec3,
-    pub color: Color,
-}

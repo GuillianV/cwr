@@ -6,6 +6,7 @@ use bevy::{
     },
 };
 
+mod render;
 mod dev;
 mod events;
 mod game;

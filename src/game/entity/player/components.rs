@@ -8,7 +8,6 @@ pub struct Player {
 }
 
 
-
 #[derive(Component)]
 pub struct PlayerCamera {
     pub position: Vec3,

@@ -1,10 +1,16 @@
-use bevy::{ecs::entity, input::mouse::MouseMotion, prelude::*};
+use bevy::{input::mouse::MouseMotion, prelude::*};
 
-use crate::{game::entity::player::{
-    components::{Player, PlayerCamera},
-    resources::MovementSettings,
-}, events::EntityMovedEvent};
+use crate::game::world::realm::resources::Realm;
 use crate::util::math::rotations::{combine_direction_with_rotation_to_eulers, vec2_to_degrees};
+use crate::{
+    events::EntityMovedEvent,
+    game::entity::player::{
+        components::{Player, PlayerCamera},
+        resources::MovementSettings,
+    },
+};
+
+use super::area::components::RenderDistance;
 
 pub fn init_player(
     mut commands: Commands,
@@ -15,8 +21,10 @@ pub fn init_player(
         Player {
             position: Vec3::new(0.0, 2.0, 0.0),
             speed: 175.0,
-            inertia: 8.,
+            inertia: 80.,
         },
+        Realm::Overworld,
+        RenderDistance(32),
         Mesh3d(meshes.add(Capsule3d::default())),
         MeshMaterial3d(materials.add(Color::srgb(0.4, 0.2, 0.3))),
         Transform::default(),
@@ -174,6 +182,5 @@ pub fn player_apply_movement(
             camera_data.rotation,
             settings.camera_rotation_speed * time.delta_secs(),
         );
-
     }
 }
