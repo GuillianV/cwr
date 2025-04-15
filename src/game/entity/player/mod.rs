@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::states::{AppState, LoadingState};
+use crate::states::AppState;
 
 pub mod area;
 pub mod components;

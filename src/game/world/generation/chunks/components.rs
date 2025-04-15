@@ -1,5 +1,11 @@
 use bevy::{
-    asset::RenderAssetUsages, log::info_span, math::{I64Vec3, Vec3A}, render::{mesh::{Indices, Mesh, PrimitiveTopology}, primitives::{Aabb, Frustum}}
+    asset::RenderAssetUsages,
+    log::info_span,
+    math::{I64Vec3, Vec3A},
+    render::{
+        mesh::{Indices, Mesh, PrimitiveTopology},
+        primitives::{Aabb, Frustum},
+    },
 };
 use binary_greedy_meshing as bgm;
 use itertools::Itertools;
@@ -10,9 +16,9 @@ use std::{
 
 use crate::{
     game::world::{
-        block::components::{Block, Face},
+        block::components::{Block, Blocks, Face},
         generation::{
-            constants::{CHUNK_S1, CHUNKP_S1, CHUNKP_S2, CHUNKP_S3, MASK_6, MASK_XYZ},
+            constants::{CHUNKP_S1, CHUNKP_S2, CHUNKP_S3, CHUNK_S1, MASK_6, MASK_XYZ},
             pos::{ChunkedPos, ColedPos},
         },
     },
@@ -74,9 +80,7 @@ impl Chunk {
         }
         (&self.palette[0], 0)
     }
-
 }
-
 
 pub fn intersects_aabb(frustum: &Frustum, aabb: &Aabb) -> bool {
     let min = aabb.min();
@@ -121,8 +125,7 @@ impl From<&[Block]> for Chunk {
 impl Chunk {
     pub fn new() -> Self {
         let mut palette = Palette::new();
-        palette.index(Block::Air());
-        palette.index(Block::Ground());
+        Blocks::list().iter().for_each(|block| { palette.index(block.clone()); });
         Chunk {
             data: PackedUints::new(CHUNKP_S3),
             palette: palette,
@@ -174,11 +177,11 @@ impl Chunk {
             let indices = bgm::indices(quads.len());
             let face: Face = face_n.into();
             for quad in quads {
-               // let voxel_i = (quad >> 32) as usize;
+                // let voxel_i = (quad >> 32) as usize;
                 let w = MASK_6 & (quad >> 18);
                 let h = MASK_6 & (quad >> 24);
                 let xyz = MASK_XYZ & quad;
-               // let block = self.palette[voxel_i];
+                // let block = self.palette[voxel_i];
                 let layer = 0;
                 let color = 0b010_101_001;
                 let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);

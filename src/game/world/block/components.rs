@@ -2,7 +2,29 @@ use bevy::{ecs::component::Component, math::Vec3};
 
 use crate::game::world::generation::pos::BlockPos;
 
-use super::family::components::BlockFamily;
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum BlockFamily {
+    Air,
+    Ground,
+}
+
+pub struct Blocks {}
+
+impl Blocks {
+    pub fn ground() -> Block {
+        Block::new(BlockFamily::Ground)
+    }
+
+    pub fn air() -> Block {
+        Block::new(BlockFamily::Air)
+    }
+
+
+    pub fn list () -> Vec<Block> {
+        vec![Blocks::air(),Blocks::ground()]
+    }
+}
+
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Block {
@@ -18,63 +40,22 @@ impl Default for Block {
 }
 
 impl Block {
-    pub fn Air() -> Self {
-        Self {
-            family: BlockFamily::Air,
-        }
-        // Block::Air
-    }
-
-    pub fn Ground() -> Self {
-        Self {
-            family: BlockFamily::Ground,
-        }
-    }
-}
-
-impl Block {
-    pub fn friction(&self) -> f32 {
-        match self {
-            _ => 1.,
-        }
-    }
-
-    pub fn slowing(&self) -> f32 {
-        match self {
-            _ => 1.,
-        }
+    pub fn new(family: BlockFamily) -> Self {
+        Self { family }
     }
 
     pub fn is_traversable(&self) -> bool {
         match self.family {
             BlockFamily::Air => true,
-            _ => false,
-        }
-    }
 
-    pub fn is_targetable(&self) -> bool {
-        match self.family {
-            BlockFamily::Air => false,
-            _ => true,
+            _ => false,
         }
     }
 
     pub fn is_opaque(&self) -> bool {
-        if self.is_foliage() {
-            return false;
-        }
-        match self {
+        match self.family {
+            BlockFamily::Air => false,
             _ => true,
-        }
-    }
-
-    pub fn is_foliage(&self) -> bool {
-        false
-    }
-
-    pub fn is_fertile_soil(&self) -> bool {
-        match self {
-            _ => false,
         }
     }
 }

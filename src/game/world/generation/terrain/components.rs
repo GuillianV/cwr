@@ -3,12 +3,10 @@ use std::ops::RangeInclusive;
 use itertools::iproduct;
 
 use crate::game::world::{
-    block::components::Block,
-    generation::{
+    block::components::{Block, BlockFamily, Blocks}, generation::{
         constants::{CHUNK_S1, CHUNK_S1I},
         pos::ColPos,
-    },
-    voxel::resources::VoxelWorld,
+    }, voxel::resources::VoxelWorld
 };
 
 pub fn gen_terrain(world: &VoxelWorld, col: ColPos) {
@@ -18,7 +16,7 @@ pub fn gen_terrain(world: &VoxelWorld, col: ColPos) {
         // Randomly decide the starting y-coordinate for Ground
 
         // Fill with Ground from ground_start_y to the bottom
-        world.set_yrange(col, (dx, dz), 0, 1 as usize, Block::Ground());
+        world.set_yrange(col, (dx, dz), 0, 1 as usize, Blocks::ground());
     }
 }
 
