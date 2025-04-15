@@ -2,7 +2,7 @@ use bevy::{ecs::component::Component, math::Vec3};
 
 use crate::game::world::generation::pos::BlockPos;
 
-use super::family::{self, components::BlockFamily};
+use super::family::components::BlockFamily;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Block {

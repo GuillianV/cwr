@@ -1,16 +1,10 @@
-use bevy::{
-    prelude::*,
-    render::{
-        RenderPlugin,
-        settings::{RenderCreation, WgpuFeatures, WgpuSettings},
-    },
-};
+use bevy::prelude::*;
 
-mod render;
 mod dev;
 mod events;
 mod game;
 mod main_menu;
+mod render;
 mod states;
 mod systems;
 mod util;

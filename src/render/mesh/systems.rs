@@ -5,7 +5,7 @@ use bevy::{
     render::{primitives::Aabb, view::NoFrustumCulling},
     tasks::{AsyncComputeTaskPool, futures_lite::future::yield_now},
 };
-use crossbeam::channel::{Receiver, unbounded};
+use crossbeam::channel::unbounded;
 use itertools::Itertools;
 
 use crate::{
@@ -14,7 +14,7 @@ use crate::{
         world::{
             area::resources::SharedLoadArea,
             block::components::Face,
-            generation::{chunks::resources::ChunkEntities, constants::CHUNK_S1, pos::ChunkPos},
+            generation::{chunks::resources::ChunkEntities, constants::CHUNK_S1},
             voxel::resources::VoxelWorld,
         },
     },
@@ -22,7 +22,10 @@ use crate::{
     states::{AppState, LoadingState},
 };
 
-use super::{components::{choose_lod_level, LOD}, resources::MeshReciever};
+use super::{
+    components::{LOD, choose_lod_level},
+    resources::MeshReciever,
+};
 
 pub fn setup_mesh_thread(
     mut commands: Commands,
@@ -41,7 +44,7 @@ pub fn setup_mesh_thread(
             loop {
                 let Some((chunk_pos, dist)) = shared_load_area.read().pop_closest_change(&chunks)
                 else {
-                    yield_now();
+                    let _ = yield_now();
                     continue;
                 };
 

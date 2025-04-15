@@ -75,12 +75,6 @@ impl Chunk {
         (&self.palette[0], 0)
     }
 
-    pub fn set_if_empty(&mut self, (x, y, z): ChunkedPos, block: Block) -> bool {
-        let idx = pad_linearize(x, y, z);
-        false
-        // self.data.set(idx, self.palette.index(block));
-        // true
-    }
 }
 
 
@@ -180,11 +174,11 @@ impl Chunk {
             let indices = bgm::indices(quads.len());
             let face: Face = face_n.into();
             for quad in quads {
-                let voxel_i = (quad >> 32) as usize;
+               // let voxel_i = (quad >> 32) as usize;
                 let w = MASK_6 & (quad >> 18);
                 let h = MASK_6 & (quad >> 24);
                 let xyz = MASK_XYZ & quad;
-                let block = self.palette[voxel_i];
+               // let block = self.palette[voxel_i];
                 let layer = 0;
                 let color = 0b010_101_001;
                 let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);

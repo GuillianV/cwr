@@ -1,16 +1,12 @@
 use bevy::prelude::*;
-use bevy::{
-    prelude::*,
-    render::{
-        RenderPlugin,
-        settings::{RenderCreation, WgpuFeatures, WgpuSettings},
-    },
+use bevy::render::{
+    RenderPlugin,
+    settings::{RenderCreation, WgpuFeatures, WgpuSettings},
 };
 
 pub struct AppPlugin;
 
 // use crate::dev::DevPlugin;
-use crate::events::EntityMovedEvent;
 use crate::game::GamePlugin;
 use crate::main_menu::MainMenuPlugin;
 use crate::render::ChunkRenderPlugin;
@@ -28,7 +24,6 @@ impl Plugin for AppPlugin {
         }))
         .init_state::<AppState>()
         .init_state::<LoadingState>()
-        .add_event::<EntityMovedEvent>()
         .add_plugins(ChunkRenderPlugin)
         // .add_plugins(DevPlugin)
         .add_plugins(MainMenuPlugin)

@@ -1,7 +1,4 @@
-use bevy::{
-    pbr::{ExtendedMaterial, MeshRenderPlugin},
-    prelude::*,
-};
+use bevy::{pbr::ExtendedMaterial, prelude::*};
 use materials::ArrayTextureMaterial;
 
 pub mod constants;

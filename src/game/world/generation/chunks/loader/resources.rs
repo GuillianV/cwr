@@ -7,10 +7,7 @@ use std::sync::Arc;
 
 use crate::game::entity::player::area::resources::PlayerArea;
 use crate::game::world::generation::pos::pos2d::Pos2d;
-use crate::game::world::generation::{
-    constants::{CHUNK_S1},
-    pos::ColPos,
-};
+use crate::game::world::generation::{constants::CHUNK_S1, pos::ColPos};
 
 #[derive(Resource)]
 pub struct LoadOrders {
@@ -113,7 +110,7 @@ fn update_gen_order(
         Ok(i) => i,
         Err(i) => i,
     };
-    
+
     if old_i != new_i {
         let element = to_generate.remove(old_i);
         to_generate.insert(new_i, element);

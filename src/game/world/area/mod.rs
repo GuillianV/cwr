@@ -11,8 +11,11 @@ impl Plugin for WorldAreaPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(LoadingState::LoadingSharedLoadArea),
-            (systems::setup_shared_load_area),
+            systems::setup_shared_load_area,
         )
-        .add_systems(Update, systems::update_shared_load_area.run_if(in_state(AppState::Game)));
+        .add_systems(
+            Update,
+            systems::update_shared_load_area.run_if(in_state(AppState::Game)),
+        );
     }
 }

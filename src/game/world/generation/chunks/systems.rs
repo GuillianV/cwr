@@ -1,12 +1,17 @@
-
-
-use std::sync::atomic::{AtomicU32, Ordering};
 use bevy::{
-    ecs::{query::{Changed, With}, system::Query}, 
-    math::{I64Vec3, Vec3A}, render::{camera::Camera, primitives::{Aabb, Frustum, Sphere}, 
-    view::{NoFrustumCulling, Visibility}}, 
-    transform::components::{GlobalTransform, Transform}
+    ecs::{
+        query::{Changed, With},
+        system::Query,
+    },
+    math::Vec3A,
+    render::{
+        camera::Camera,
+        primitives::{Aabb, Frustum, Sphere},
+        view::{NoFrustumCulling, Visibility},
+    },
+    transform::components::{GlobalTransform, Transform},
 };
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use crate::game::world::{block::components::Face, generation::pos::chunk_pos};
 
@@ -14,10 +19,7 @@ use super::components::{face_visible, intersects_aabb};
 
 pub fn chunk_culling(
     view_query: Query<(&Frustum, &Camera, &GlobalTransform), Changed<Frustum>>,
-    mut chunk_query: Query<
-        (&mut Visibility, &Transform, &Face, &Aabb),
-        With<NoFrustumCulling>,
-    >,
+    mut chunk_query: Query<(&mut Visibility, &Transform, &Face, &Aabb), With<NoFrustumCulling>>,
 ) {
     for (frustum, camera, gtransform) in view_query.iter() {
         if !camera.is_active {
