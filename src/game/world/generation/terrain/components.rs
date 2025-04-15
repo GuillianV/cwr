@@ -19,17 +19,9 @@ pub fn gen_terrain(world: &VoxelWorld, col: ColPos) {
         // Randomly decide the starting y-coordinate for Ground
         let ground_start_y :i32 = 3;
 
-        // Fill with Air from the top to the ground_start_y
-        world.set_yrange(
-            col,
-            (dx, dz),
-            MAX_GEN_HEIGHT as i32 - ground_start_y,
-            MAX_GEN_HEIGHT,
-            Block::Ground(),
-        );
-
+   
         // Fill with Ground from ground_start_y to the bottom
-        world.set_yrange(col, (dx, dz), ground_start_y, ground_start_y as usize, Block::Ground());
+        world.set_yrange(col, (dx, dz), 1, 1 as usize, Block::Ground());
     }
 }
 

@@ -14,7 +14,7 @@ use crate::{
         world::{
             area::resources::SharedLoadArea,
             block::components::Face,
-            generation::{constants::CHUNK_S1, pos::ChunkPos},
+            generation::{chunks::resources::ChunkEntities, constants::CHUNK_S1, pos::ChunkPos},
             voxel::resources::VoxelWorld,
         },
     },
@@ -43,10 +43,13 @@ pub fn setup_mesh_thread(
                     yield_now();
                     continue;
                 };
+
                 let lod = 1;
                 let Some(chunk) = chunks.get(&chunk_pos) else {
                     continue;
                 };
+
+           
                 let face_meshes = chunk.create_face_meshes(lod);
                 for (i, face_mesh) in face_meshes.into_iter().enumerate() {
                     let face: Face = i.into();
@@ -70,6 +73,7 @@ pub fn pull_meshes(
     mut commands: Commands,
     mesh_reciever: Res<MeshReciever>,
     mut mesh_query: Query<(&mut Mesh3d, &mut LOD)>,
+    mut chunk_ents: ResMut<ChunkEntities>,
     mut meshes: ResMut<Assets<Mesh>>,
     block_tex_array: Res<BlockTextureArray>,
     load_area: Res<PlayerArea>,
@@ -86,14 +90,22 @@ pub fn pull_meshes(
         .unique_by(|(_, pos, face, _)| (*pos, *face))
     {
         let Some(mesh) = mesh_opt else {
+            if let Some(ent) = chunk_ents.0.remove(&(chunk_pos, face)) {
+                commands.entity(ent).despawn();
+            }
             continue;
         };
-
-        println!("mesh recieved");
-        println!("{:?}", mesh);
-
         let chunk_aabb = Aabb::from_min_max(Vec3::ZERO, Vec3::splat(CHUNK_S1 as f32));
-        if blocks.chunks.contains_key(&chunk_pos) {
+        if let Some(ent) = chunk_ents.0.get(&(chunk_pos, face)) {
+            if let Ok((mut handle, mut old_lod)) = mesh_query.get_mut(*ent) {
+                handle.0 = meshes.add(mesh);
+                *old_lod = lod;
+            } else {
+                // the entity is not instanciated yet, we put it back
+                println!("entity wasn't ready to recieve updated mesh");
+            }
+        } else if blocks.chunks.contains_key(&chunk_pos) {
+
             let ent = commands
                 .spawn((
                     Mesh3d(meshes.add(mesh)),
@@ -108,6 +120,7 @@ pub fn pull_meshes(
                     face,
                 ))
                 .id();
+            chunk_ents.0.insert((chunk_pos, face), ent);
         }
     }
 }

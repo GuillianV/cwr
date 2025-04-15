@@ -100,6 +100,8 @@ impl From<&[Block]> for Chunk {
 impl Chunk {
     pub fn new() -> Self {
         let mut palette = Palette::new();
+        palette.index(Block::Air());
+        palette.index(Block::Ground());
         Chunk {
             data: PackedUints::new(CHUNKP_S3),
             palette: palette,
