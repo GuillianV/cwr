@@ -1,7 +1,5 @@
 use bevy::{
-    asset::RenderAssetUsages,
-    log::info_span,
-    render::mesh::{Indices, Mesh, PrimitiveTopology},
+    asset::RenderAssetUsages, log::info_span, math::{I64Vec3, Vec3A}, render::{mesh::{Indices, Mesh, PrimitiveTopology}, primitives::{Aabb, Frustum}}
 };
 use binary_greedy_meshing as bgm;
 use itertools::Itertools;
@@ -83,6 +81,35 @@ impl Chunk {
         // self.data.set(idx, self.palette.index(block));
         // true
     }
+}
+
+
+pub fn intersects_aabb(frustum: &Frustum, aabb: &Aabb) -> bool {
+    let min = aabb.min();
+    let max = aabb.max();
+    for half_space in &frustum.half_spaces[..5] {
+        let mask: [u32; 3] = half_space.normal().cmpgt(Vec3A::ZERO).into();
+        let mask = Vec3A::from_array(mask.map(|b| b as f32));
+        let vmax = (mask * max + (1.0 - mask) * min).extend(1.0);
+        let normal = half_space.normal_d();
+        if normal.dot(vmax) < 0.0 {
+            return false;
+        }
+    }
+    true
+}
+
+pub fn face_visible(from: &I64Vec3, coord: I64Vec3, face: &Face) -> bool {
+    let rel_coord = coord - *from;
+    let res = match face {
+        Face::Left => rel_coord.x >= 0,
+        Face::Down => rel_coord.y >= 0,
+        Face::Back => rel_coord.z >= 0,
+        Face::Right => rel_coord.x <= 0,
+        Face::Up => rel_coord.y <= 0,
+        Face::Front => rel_coord.z <= 0,
+    };
+    res
 }
 
 impl From<&[Block]> for Chunk {

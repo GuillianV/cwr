@@ -18,10 +18,11 @@ use crate::{
             voxel::resources::VoxelWorld,
         },
     },
-    render::resources::BlockTextureArray, states::{AppState, LoadingState},
+    render::resources::BlockTextureArray,
+    states::{AppState, LoadingState},
 };
 
-use super::{components::LOD, resources::MeshReciever};
+use super::{components::{choose_lod_level, LOD}, resources::MeshReciever};
 
 pub fn setup_mesh_thread(
     mut commands: Commands,
@@ -44,12 +45,11 @@ pub fn setup_mesh_thread(
                     continue;
                 };
 
-                let lod = 1;
+                let lod = choose_lod_level(dist);
                 let Some(chunk) = chunks.get(&chunk_pos) else {
                     continue;
                 };
 
-           
                 let face_meshes = chunk.create_face_meshes(lod);
                 for (i, face_mesh) in face_meshes.into_iter().enumerate() {
                     let face: Face = i.into();
@@ -66,7 +66,6 @@ pub fn setup_mesh_thread(
 
     loading_state_next_state.set(LoadingState::LoadingRender);
     app_state_next_state.set(AppState::Game);
-
 }
 
 pub fn pull_meshes(
@@ -105,7 +104,6 @@ pub fn pull_meshes(
                 println!("entity wasn't ready to recieve updated mesh");
             }
         } else if blocks.chunks.contains_key(&chunk_pos) {
-
             let ent = commands
                 .spawn((
                     Mesh3d(meshes.add(mesh)),
@@ -121,6 +119,39 @@ pub fn pull_meshes(
                 ))
                 .id();
             chunk_ents.0.insert((chunk_pos, face), ent);
+        }
+    }
+}
+
+pub fn mark_lod_remesh(
+    load_area: Res<PlayerArea>,
+    chunk_ents: ResMut<ChunkEntities>,
+    lods: Query<&LOD>,
+    blocks: ResMut<VoxelWorld>,
+) {
+    // FIXME: this only remesh chunks that previously had a mesh
+    // However in some rare cases a chunk with some blocs can produce an empty mesh at certain LODs
+    // and never get remeshed even though it should
+    if !load_area.is_changed() {
+        return;
+    }
+    for ((chunk_pos, _), entity) in chunk_ents
+        .0
+        .iter()
+        .unique_by(|((chunk_pos, _), _)| chunk_pos)
+    {
+        let Some(dist) = load_area.col_dists.get(&(*chunk_pos).into()) else {
+            continue;
+        };
+        let new_lod = choose_lod_level(*dist);
+        let Ok(old_lod) = lods.get(*entity) else {
+            continue;
+        };
+        if new_lod != old_lod.0 {
+            let Some(mut chunk) = blocks.chunks.get_mut(chunk_pos) else {
+                continue;
+            };
+            chunk.changed = true;
         }
     }
 }

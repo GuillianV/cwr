@@ -113,7 +113,7 @@ fn update_gen_order(
         Ok(i) => i,
         Err(i) => i,
     };
-    //Potentiellement foireux
+    
     if old_i != new_i {
         let element = to_generate.remove(old_i);
         to_generate.insert(new_i, element);

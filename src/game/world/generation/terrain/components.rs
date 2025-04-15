@@ -21,7 +21,7 @@ pub fn gen_terrain(world: &VoxelWorld, col: ColPos) {
 
    
         // Fill with Ground from ground_start_y to the bottom
-        world.set_yrange(col, (dx, dz), 1, 1 as usize, Block::Ground());
+        world.set_yrange(col, (dx, dz), 0, 1 as usize, Block::Ground());
     }
 }
 

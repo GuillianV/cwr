@@ -20,7 +20,7 @@ impl Plugin for EntityPlayerPlugin {
                     systems::player_set_movement,
                     systems::player_set_camera_movement,
                     systems::player_apply_movement,
-                ).chain()
+                )
                     .run_if(in_state(AppState::Game)),
             );
     }

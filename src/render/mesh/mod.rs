@@ -14,6 +14,6 @@ impl Plugin for MeshRenderPlugin {
             OnEnter(LoadingState::LoadingMesh),
             (systems::setup_mesh_thread,),
         )
-        .add_systems(Update, systems::pull_meshes.run_if(in_state(LoadingState::LoadingRender)));
+        .add_systems(Update, (systems::pull_meshes, systems::mark_lod_remesh).run_if(in_state(LoadingState::LoadingRender)));
     }
 }

@@ -9,12 +9,10 @@ use super::resources::SharedLoadArea;
 
 pub fn setup_shared_load_area(mut commands: Commands, load_area: Res<PlayerArea>,
     mut loading_state_next_state: ResMut<NextState<LoadingState>>,
-    mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
     commands.insert_resource(SharedLoadArea(Arc::new(RwLock::new(load_area.clone()))));
     loading_state_next_state.set(LoadingState::LoadingMesh);
 
-    println!("Game")
 }   
 
 pub fn update_shared_load_area(load_area: Res<PlayerArea>, shared_load_area: Res<SharedLoadArea>) {

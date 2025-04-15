@@ -14,8 +14,8 @@ impl Default for MovementSettings {
     fn default() -> Self {
         Self {
             sensitivity: 0.00012,
-            camera_rotation_speed: 15.,
-            camera_translation_speed: 15.,
+            camera_rotation_speed: 25.,
+            camera_translation_speed: 25.,
             camera_height: 3.,
             camera_distance: 5.,
         }
