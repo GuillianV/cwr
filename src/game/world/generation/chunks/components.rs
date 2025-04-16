@@ -16,7 +16,7 @@ use std::{
 
 use crate::{
     game::world::{
-        block::components::{Block, Blocks, Face},
+        block::components::{Block, BlockFamily, Blocks, Face},
         generation::{
             constants::{CHUNKP_S1, CHUNKP_S2, CHUNKP_S3, CHUNK_S1, MASK_6, MASK_XYZ},
             pos::{ChunkedPos, ColedPos},
@@ -134,16 +134,16 @@ impl Chunk {
 }
 
 impl Chunk {
-    pub fn voxel_data_lod(&self, lod: usize) -> Vec<u16> {
+    pub fn voxel_data_lod(&self, lod: f32) -> Vec<u16> {
         let voxels = self.data.unpack_u16();
-        if lod == 1 {
+        if lod == 1.0 {
             return voxels;
         }
         let mut res = vec![0; CHUNKP_S3];
         for x in 0..CHUNK_S1 {
             for y in 0..CHUNK_S1 {
                 for z in 0..CHUNK_S1 {
-                    let lod_i = pad_linearize(x / lod, y / lod, z / lod);
+                    let lod_i = pad_linearize((x as f32 / lod).floor() as usize, (y as f32 / lod).floor() as usize, (z as f32 / lod).floor() as usize);
                     if res[lod_i] == 0 {
                         res[lod_i] = voxels[pad_linearize(x, y, z)];
                     }
@@ -155,7 +155,7 @@ impl Chunk {
 
     /// Doesn't work with lod > 2, because chunks are of size 62 (to get to 64 with padding) and 62 = 2*31
     /// TODO: make it work with lod > 2 if necessary (by truncating quads)
-    pub fn create_face_meshes(&self, lod: usize) -> [Option<Mesh>; 6] {
+    pub fn create_face_meshes(&self, lod: f32) -> [Option<Mesh>; 6] {
         // Gathering binary greedy meshing input data
         let mesh_data_span = info_span!("mesh voxel data", name = "mesh voxel data").entered();
         let voxels = self.voxel_data_lod(lod);
@@ -177,13 +177,20 @@ impl Chunk {
             let indices = bgm::indices(quads.len());
             let face: Face = face_n.into();
             for quad in quads {
-                // let voxel_i = (quad >> 32) as usize;
+                let voxel_i = (quad >> 32) as usize;
                 let w = MASK_6 & (quad >> 18);
                 let h = MASK_6 & (quad >> 24);
                 let xyz = MASK_XYZ & quad;
-                // let block = self.palette[voxel_i];
+                let block = self.palette[voxel_i];
                 let layer = 0;
-                let color = 0b010_101_001;
+                let color = match block.family {
+                    
+                    BlockFamily::Deepslate => 0b110_110_110,
+                    BlockFamily::Stone => 0b100_100_100,
+                    BlockFamily::Dirt => 0b010_101_001,
+                    BlockFamily::Air => 0b000_000_000,
+                    _ => 0b010_101_001
+                };
                 let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);
                 let quad_info = (layer << 12) | (color << 3) | face_n as u32;
                 voxel_data.extend_from_slice(&[

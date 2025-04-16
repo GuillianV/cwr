@@ -1,4 +1,13 @@
-use bevy::{input::mouse::MouseMotion, prelude::*};
+use bevy::{
+    core_pipeline::{
+        fxaa::{Fxaa, Sensitivity},
+        prepass::{DeferredPrepass, DepthPrepass, MotionVectorPrepass, NormalPrepass}, smaa::{Smaa, SmaaPreset},
+    },
+    input::mouse::MouseMotion,
+    pbr::{ClusterConfig, FogSettings},
+    prelude::*,
+    render::{self, primitives::Frustum},
+};
 
 use crate::game::entity::player::{
     components::{Player, PlayerCamera},
@@ -14,6 +23,7 @@ pub fn init_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    let render_dist =64 ;
     commands.spawn((
         Player {
             position: Vec3::new(0.0, 2.0, 0.0),
@@ -21,7 +31,7 @@ pub fn init_player(
             inertia: 50.,
         },
         Realm::Overworld,
-        RenderDistance(64),
+        RenderDistance(render_dist),
         Mesh3d(meshes.add(Capsule3d::default())),
         MeshMaterial3d(materials.add(Color::srgb(0.4, 0.2, 0.3))),
         Transform::default(),
@@ -35,7 +45,42 @@ pub fn init_player(
             yaw: 0.0,
             yaw_euler: Vec2::ZERO,
         },
-        Camera3d::default(),
+        Msaa::Sample2,
+        Smaa {
+            preset: SmaaPreset::Low,
+        },
+        ClusterConfig::FixedZ {
+            // 4096 clusters is the Bevy default
+            // if you don't have many lights, you can reduce this value
+            total: 2048,
+            // Bevy default is 24 Z-slices
+            // For a top-down-view game, 1 is probably optimal.
+            z_slices: 12,
+            dynamic_resizing: true,
+            z_config: Default::default(),
+        },
+        Fxaa {
+            enabled: true,
+            edge_threshold: Sensitivity::Medium,
+            edge_threshold_min: Sensitivity::Medium,
+        },
+        DistanceFog {
+            color: Color::srgb(0.9, 0.9, 0.9),
+            falloff: FogFalloff::Linear {
+                start: 64. * (render_dist - 8) as f32,
+                end:  64. * (render_dist) as f32,
+            },
+            ..Default::default()
+        },
+        Camera {
+            clear_color: bevy::prelude::ClearColorConfig::Custom(Color::srgb(0.9, 0.9, 0.9)),
+            hdr: true,
+
+            ..Default::default()
+        },
+        Camera3d {
+            ..Default::default()
+        },
         Transform::default(),
     ));
 }
@@ -150,7 +195,6 @@ pub fn player_set_movement(
             old_position.z + combined_direction.1 * player.speed * time.delta_secs(),
         );
 
-
         transform.translation = transform
             .translation
             .lerp(new_position, player.inertia * time.delta_secs());
@@ -164,13 +208,15 @@ pub fn player_apply_movement(
     time: Res<Time>,
 ) {
     for (camera_data, mut transform) in q_camera.iter_mut() {
-        transform.translation = transform.translation.lerp(
-            camera_data.position,
-            settings.camera_translation_speed * time.delta_secs(),
-        );
-        transform.rotation = transform.rotation.lerp(
-            camera_data.rotation,
-            settings.camera_rotation_speed * time.delta_secs(),
-        );
+        transform.translation = camera_data.position;
+        // transform.translation.lerp(
+        //     camera_data.position,
+        //     settings.camera_translation_speed * time.delta_secs(),
+        // );
+        transform.rotation = camera_data.rotation;
+        //  transform.rotation.lerp(
+        //     camera_data.rotation,
+        //     settings.camera_rotation_speed * time.delta_secs(),
+        // );
     }
 }

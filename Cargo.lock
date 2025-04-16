@@ -1378,6 +1378,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "bracket-noise"
+version = "0.8.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0b7443d0990c69db7a83f376f0101d684c20a911698e5f932bffbda2c8b08dd"
+dependencies = [
+ "bracket-random",
+]
+
+[[package]]
+name = "bracket-random"
+version = "0.8.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "437be61484077b1ddb57002ce3c96b7d03cbf500b5d15157ee7e67e22332c39b"
+dependencies = [
+ "getrandom 0.2.15",
+ "js-sys",
+ "lazy_static",
+ "rand",
+ "rand_xorshift",
+ "regex",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1792,10 +1816,10 @@ dependencies = [
  "bevy",
  "bevy_dev_tools",
  "binary-greedy-meshing",
+ "bracket-noise",
  "crossbeam",
  "dashmap",
  "itertools",
- "noise",
  "parking_lot",
 ]
 
@@ -2810,17 +2834,6 @@ dependencies = [
  "cfg-if",
  "cfg_aliases 0.2.1",
  "libc",
-]
-
-[[package]]
-name = "noise"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6da45c8333f2e152fc665d78a380be060eb84fad8ca4c9f7ac8ca29216cff0cc"
-dependencies = [
- "num-traits",
- "rand",
- "rand_xorshift",
 ]
 
 [[package]]

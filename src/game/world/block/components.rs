@@ -5,14 +5,24 @@ use crate::game::world::generation::pos::BlockPos;
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum BlockFamily {
     Air,
-    Ground,
+    Dirt,
+    Stone,
+    Deepslate,
 }
 
 pub struct Blocks {}
 
 impl Blocks {
-    pub fn ground() -> Block {
-        Block::new(BlockFamily::Ground)
+    pub fn dirt() -> Block {
+        Block::new(BlockFamily::Dirt)
+    }
+
+    pub fn stone() -> Block {
+        Block::new(BlockFamily::Stone)
+    }
+
+    pub fn deepslate() -> Block {
+        Block::new(BlockFamily::Deepslate)
     }
 
     pub fn air() -> Block {
@@ -21,7 +31,7 @@ impl Blocks {
 
 
     pub fn list () -> Vec<Block> {
-        vec![Blocks::air(),Blocks::ground()]
+        vec![Blocks::air(),Blocks::dirt(), Blocks::stone(), Blocks::deepslate()]
     }
 }
 

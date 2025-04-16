@@ -16,7 +16,7 @@ impl Default for MovementSettings {
             sensitivity: 0.00012,
             camera_rotation_speed: 25.,
             camera_translation_speed: 25.,
-            camera_height: 3.,
+            camera_height: 400.,
             camera_distance: 5.,
         }
     }

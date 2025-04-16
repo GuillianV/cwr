@@ -10,7 +10,10 @@ use itertools::Itertools;
 
 use crate::{
     game::{
-        entity::player::area::resources::PlayerArea,
+        entity::player::{
+            area::{components::RenderDistance, resources::PlayerArea},
+            components::Player,
+        },
         world::{
             area::resources::SharedLoadArea,
             block::components::Face,
@@ -116,6 +119,7 @@ pub fn pull_meshes(
                             * CHUNK_S1 as f32,
                     ),
                     NoFrustumCulling,
+                    Visibility::Hidden,
                     chunk_aabb,
                     lod,
                     face,
@@ -158,3 +162,4 @@ pub fn mark_lod_remesh(
         }
     }
 }
+
