@@ -8,6 +8,8 @@ pub enum BlockFamily {
     Dirt,
     Stone,
     Deepslate,
+    Snow,
+    Sand
 }
 
 pub struct Blocks {}
@@ -29,9 +31,16 @@ impl Blocks {
         Block::new(BlockFamily::Air)
     }
 
+    pub fn snow() -> Block {
+        Block::new(BlockFamily::Snow)
+    }
+
+    pub fn sand() -> Block {
+        Block::new(BlockFamily::Sand)
+    }
 
     pub fn list () -> Vec<Block> {
-        vec![Blocks::air(),Blocks::dirt(), Blocks::stone(), Blocks::deepslate()]
+        vec![Blocks::air(),Blocks::dirt(), Blocks::stone(), Blocks::deepslate(), Blocks::snow(), Blocks::sand()]
     }
 }
 

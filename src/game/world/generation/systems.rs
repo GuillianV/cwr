@@ -7,18 +7,18 @@ use crate::game::world::generation::terrain::components::gen_terrain;
 use crate::game::world::voxel::resources::VoxelWorld;
 
 use super::chunks::loader::resources::LoadOrders;
-use super::noise::resources::ArcFastNoise;
+use super::noise::resources::ArcNoises;
 
 pub fn setup_gen_thread(
     blocks: Res<VoxelWorld>,
-    perlin_noise_map: Res<ArcFastNoise>,
+    perlin_noise_map: Res<ArcNoises>,
     /* world_rng: Res<WorldRng>, */ load_orders: Res<LoadOrders>,
 ) {
     let thread_pool = AsyncComputeTaskPool::get();
     let chunks = Arc::clone(&blocks.chunks);
     // let seed_value = world_rng.seed;
     let load_orders = Arc::clone(&load_orders.to_generate);
-    let perlin_noise_map = Arc::clone(&perlin_noise_map.fast_noise);
+    let noises = Arc::clone(&perlin_noise_map.noises);
 
     thread_pool
         .spawn(async move {
@@ -30,7 +30,7 @@ pub fn setup_gen_thread(
                     continue;
                 };
 
-                gen_terrain(&world, col_pos, &perlin_noise_map);
+                gen_terrain(&world, col_pos,  &noises);
                 world.mark_change_col(col_pos);
             }
         })

@@ -189,6 +189,8 @@ impl Chunk {
                     BlockFamily::Stone => 0b100_100_100,
                     BlockFamily::Dirt => 0b010_101_001,
                     BlockFamily::Air => 0b000_000_000,
+                    BlockFamily::Snow => 0b111_111_111,
+                    BlockFamily::Sand =>  0b101_111_111,
                     _ => 0b010_101_001
                 };
                 let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);

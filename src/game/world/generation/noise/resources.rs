@@ -11,24 +11,35 @@ pub struct NoiseMapSettings {
 
 impl Default for NoiseMapSettings {
     fn default() -> Self {
-        Self {
-            seed: 42,
-        }
+        Self { seed: 42 }
     }
 }
 
 /// Noise map settings
 #[derive(Resource)]
 
-
-pub struct ArcFastNoise {
-
-    pub fast_noise: Arc<FastNoise>,
+pub struct ArcNoises {
+    pub noises: Arc<NoisesList>,
 }
 
-impl ArcFastNoise {
-    pub fn new(fast_noise: FastNoise) -> Self {
-        Self { fast_noise: Arc::new(fast_noise) }
+pub struct NoisesList {
+    pub fast_noise: FastNoise,
+    pub continental_noise: FastNoise,
+    pub erosion_noise: FastNoise,
+}
+
+impl ArcNoises {
+    pub fn new(
+        fast_noise: FastNoise,
+        continental_noise: FastNoise,
+        erosion_noise: FastNoise,
+    ) -> Self {
+        Self {
+            noises: Arc::new(NoisesList {
+                fast_noise,
+                continental_noise,
+                erosion_noise,
+            }),
+        }
     }
 }
-
