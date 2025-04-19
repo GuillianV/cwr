@@ -1,4 +1,4 @@
-use bevy::{ecs::component::Component, math::Vec3};
+use bevy::{ecs::component::Component, math::Vec3, text::cosmic_text::Color};
 
 use crate::game::world::generation::pos::BlockPos;
 
@@ -9,7 +9,9 @@ pub enum BlockFamily {
     Stone,
     Deepslate,
     Snow,
-    Sand
+    Sand,
+    Mushroom,
+    Ice
 }
 
 pub struct Blocks {}
@@ -37,6 +39,15 @@ impl Blocks {
 
     pub fn sand() -> Block {
         Block::new(BlockFamily::Sand)
+    }
+
+
+    pub fn mushroom() -> Block {
+        Block::new(BlockFamily::Mushroom)
+    }
+    
+    pub fn ice() -> Block {
+        Block::new(BlockFamily::Ice)
     }
 
     pub fn list () -> Vec<Block> {
@@ -75,6 +86,19 @@ impl Block {
         match self.family {
             BlockFamily::Air => false,
             _ => true,
+        }
+    }
+
+    pub fn color(&self) -> u32 {
+        match self.family {
+            BlockFamily::Deepslate => 0b110_110_110,
+            BlockFamily::Stone => 0b100_100_100,
+            BlockFamily::Dirt => 0b010_101_001,
+            BlockFamily::Air => 0b000_000_000,
+            BlockFamily::Snow => 0b111_111_111,
+            BlockFamily::Sand =>  0b101_111_111,
+            BlockFamily::Mushroom => 0b111_111_111,
+            BlockFamily::Ice => 0b110_101_011,
         }
     }
 }

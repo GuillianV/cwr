@@ -183,16 +183,7 @@ impl Chunk {
                 let xyz = MASK_XYZ & quad;
                 let block = self.palette[voxel_i];
                 let layer = 0;
-                let color = match block.family {
-                    
-                    BlockFamily::Deepslate => 0b110_110_110,
-                    BlockFamily::Stone => 0b100_100_100,
-                    BlockFamily::Dirt => 0b010_101_001,
-                    BlockFamily::Air => 0b000_000_000,
-                    BlockFamily::Snow => 0b111_111_111,
-                    BlockFamily::Sand =>  0b101_111_111,
-                    _ => 0b010_101_001
-                };
+                let color = block.color();
                 let vertices = face.vertices_packed(xyz as u32, w as u32, h as u32, lod as u32);
                 let quad_info = (layer << 12) | (color << 3) | face_n as u32;
                 voxel_data.extend_from_slice(&[
