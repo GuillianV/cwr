@@ -3,8 +3,9 @@ use bevy::prelude::*;
 use crate::main_menu::components::*;
 use crate::main_menu::{styles::*, systems::interactions::*};
 
-pub fn spawn_layout(commands: Commands, ) {//asset_server: Res<AssetServer>
-    build_layout(commands,);// &asset_server
+pub fn spawn_layout(commands: Commands) {
+    //asset_server: Res<AssetServer>
+    build_layout(commands); // &asset_server
 }
 
 pub fn despawn_layout(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
@@ -13,7 +14,8 @@ pub fn despawn_layout(mut commands: Commands, main_menu_query: Query<Entity, Wit
     }
 }
 
-pub fn build_layout(mut commands: Commands, ) {//asset_server: &Res<AssetServer>
+pub fn build_layout(mut commands: Commands) {
+    //asset_server: &Res<AssetServer>
     let container_node = Node {
         width: Val::Percent(100.0),
         height: Val::Percent(100.0),
@@ -54,13 +56,13 @@ pub fn build_layout(mut commands: Commands, ) {//asset_server: &Res<AssetServer>
             button_node,
             BorderColor(Color::BLACK),
             BorderRadius::all(Val::Px(10.0)),
-            BoxShadow {
-                spread_radius: Val::Px(2.0),
-                blur_radius: Val::Px(2.0),
-                color: Color::BLACK,
-                x_offset: Val::Px(1.0),
-                y_offset: Val::Px(1.0),
-            },
+            BoxShadow::new(
+                Color::BLACK,
+                Val::Px(1.0),
+                Val::Px(1.0),
+                Val::Px(2.0),
+                Val::Px(2.0),
+            ),
             BackgroundColor(NORMAL_BUTTON),
             PlayButton {},
         ))

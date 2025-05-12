@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use bevy::{
     prelude::*,
-    render::{primitives::Aabb, view::NoFrustumCulling},
-    tasks::{AsyncComputeTaskPool, futures_lite::future::yield_now},
+    render::{experimental::occlusion_culling::OcclusionCulling, primitives::Aabb, view::NoFrustumCulling},
+    tasks::{futures_lite::future::yield_now, AsyncComputeTaskPool},
 };
 use crossbeam::channel::unbounded;
 use itertools::Itertools;
@@ -118,8 +118,8 @@ pub fn pull_meshes(
                         Vec3::new(chunk_pos.x as f32, chunk_pos.y as f32, chunk_pos.z as f32)
                             * CHUNK_S1 as f32,
                     ),
-                    NoFrustumCulling,
-                    Visibility::Hidden,
+                    OcclusionCulling,
+                    // Visibility::Hidden,
                     chunk_aabb,
                     lod,
                     face,

@@ -1,4 +1,3 @@
-use bevy::core::TaskPoolThreadAssignmentPolicy;
 use bevy::core_pipeline::CorePipelinePlugin;
 use bevy::core_pipeline::smaa::SmaaPlugin;
 use bevy::prelude::*;
@@ -26,15 +25,14 @@ impl Plugin for AppPlugin {
                     render_creation: RenderCreation::Automatic(WgpuSettings {
                         features: WgpuFeatures::POLYGON_MODE_LINE,
                         power_preference: PowerPreference::HighPerformance,
-                        priority: WgpuSettingsPriority::Functionality,
-                        ..default()
+                        ..Default::default()
                     }),
                     ..default()
                 })
                 .set(TaskPoolPlugin {
                     task_pool_options: TaskPoolOptions {
                         min_total_threads: 1,
-                        max_total_threads: available_parallelism() - 2, // unlimited threads
+                        max_total_threads: available_parallelism(), // unlimited threads
                         ..Default::default()
                     },
                 })

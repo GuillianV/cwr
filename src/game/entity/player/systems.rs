@@ -4,7 +4,7 @@ use bevy::{
         prepass::{DeferredPrepass, DepthPrepass, MotionVectorPrepass, NormalPrepass}, smaa::{Smaa, SmaaPreset},
     },
     input::mouse::MouseMotion,
-    pbr::{ClusterConfig, FogSettings},
+    pbr::{ClusterConfig},
     prelude::*,
     render::{self, primitives::Frustum},
 };
@@ -23,7 +23,7 @@ pub fn init_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let render_dist =64 ;
+    let render_dist = 32 ;
     commands.spawn((
         Player {
             position: Vec3::new(0.0, 2.0, 0.0),

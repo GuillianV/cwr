@@ -23,23 +23,26 @@ fn pos_to_range(pos: ColPos) -> [RangeInclusive<i32>; 2] {
 pub fn gen_terrain(world: &VoxelWorld, col: ColPos, fast_noise: &NoisesList) {
     let gen_span = info_span!("noise gen", name = "noise gen").entered();
 
-    let mut temperature_noise = FastNoise::new();
-    temperature_noise.set_frequency(0.0001);
+    let mut exemple_noise = FastNoise::new();
+    exemple_noise.set_frequency(0.01);
 
-    let mut humidity_noise = FastNoise::new();
-    humidity_noise.set_frequency(0.001);
+    // let mut temperature_noise = FastNoise::new();
+    // temperature_noise.set_frequency(0.0001);
 
-    let mut weird_noise = FastNoise::new();
-    weird_noise.set_frequency(0.004);
+    // let mut humidity_noise = FastNoise::new();
+    // humidity_noise.set_frequency(0.001);
 
-    let mut erosion_noise = FastNoise::new();
-    erosion_noise.set_frequency(0.002);
+    // let mut weird_noise = FastNoise::new();
+    // weird_noise.set_frequency(0.004);
 
-    let mut continental_noise = FastNoise::new();
-    continental_noise.set_frequency(0.001);
+    // let mut erosion_noise = FastNoise::new();
+    // erosion_noise.set_frequency(0.002);
 
-    let mut pv_noise = FastNoise::new();
-    pv_noise.set_frequency(0.0002);
+    // let mut continental_noise = FastNoise::new();
+    // continental_noise.set_frequency(0.001);
+
+    // let mut pv_noise = FastNoise::new();
+    // pv_noise.set_frequency(0.0002);
 
     let ranges = pos_to_range(col);
     let offsets = ranges
@@ -49,74 +52,75 @@ pub fn gen_terrain(world: &VoxelWorld, col: ColPos, fast_noise: &NoisesList) {
     gen_span.exit();
     let fill_span = info_span!("chunk filling", name = "chunk filling").entered();
     for (dx, dz) in iproduct!(0..CHUNK_S1, 0..CHUNK_S1) {
-        let height = 1.;
+        // let height = 1.;
         let offset_x = offsets[1];
         let offset_z = offsets[0];
-        let biome = get_biome(
-            &continental_noise,
-            &erosion_noise,
-            &temperature_noise,
-            &humidity_noise,
-            &pv_noise,
-            offset_x,
-            offset_z,
-            dx as f32,
-            dz as f32,
-        );
+        // let biome = get_biome(
+        //     &continental_noise,
+        //     &erosion_noise,
+        //     &temperature_noise,
+        //     &humidity_noise,
+        //     &pv_noise,
+        //     offset_x,
+        //     offset_z,
+        //     dx as f32,
+        //     dz as f32,
+        // );
 
-        let temperature_height =
-            ((temperature_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
-        let humidity_height =
-            ((humidity_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
-        let weird_height =
-            ((weird_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
-        let erosion_height =
-            ((erosion_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
-        let continental_height =
-            ((continental_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
-        let pv_height =
-            ((pv_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let temperature_height =
+        //     ((temperature_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let humidity_height =
+        //     ((humidity_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let weird_height =
+        //     ((weird_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let erosion_height =
+        //     ((erosion_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let continental_height =
+        //     ((continental_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+        // let pv_height =
+        //     ((pv_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
 
-        let height = (temperature_height
-            + humidity_height
-            + weird_height * weird_height
-            + erosion_height
-            + continental_height * continental_height
-            + pv_height * pv_height)
-            / 6.;
+        // let height = (temperature_height
+        //     + humidity_height
+        //     + weird_height * weird_height
+        //     + erosion_height
+        //     + continental_height * continental_height
+        //     + pv_height * pv_height)
+        //     / 6.;
 
-        
-        let block = match biome {
-                Biome::MushroomFields => Blocks::mushroom(),
-                Biome::DeepFrozenOcean => Blocks::ice(),
-                Biome::DeepOcean => Blocks::dirt(),
-                Biome::FrozenOcean => Blocks::ice(),
-                Biome::ColdOcean => Blocks::ice(),
-                Biome::Ocean => Blocks::dirt(),
-                Biome::LukewarmOcean => Blocks::dirt(),
-                Biome::WarmOcean => Blocks::dirt(),
-                Biome::DeepDark => Blocks::dirt(),
-                Biome::LushCaves => Blocks::dirt(),
-                Biome::DripstoneCaves => Blocks::dirt(),
-                Biome::FrozenRiver => Blocks::ice(),
-                Biome::River => Blocks::dirt(),
-                Biome::StonyShore => Blocks::sand(),
-                Biome::Badlands => Blocks::dirt(),
-                Biome::Beach => Blocks::sand(),
-                Biome::SnowyBeach => Blocks::sand(),
-                Biome::Desert => Blocks::sand(),
-                Biome::WoodedBadlands => Blocks::dirt(),
-                Biome::SnowySlopes => Blocks::sand(),
-                Biome::Plateau => Blocks::dirt(),
-                Biome::JaggedPeaks => Blocks::dirt(),
-                Biome::StonyPeaks => Blocks::dirt(),
-                Biome::Plains => Blocks::dirt(),
-        };
-        
-        
+        // let block = match biome {
+        //         Biome::MushroomFields => Blocks::mushroom(),
+        //         Biome::DeepFrozenOcean => Blocks::ice(),
+        //         Biome::DeepOcean => Blocks::dirt(),
+        //         Biome::FrozenOcean => Blocks::ice(),
+        //         Biome::ColdOcean => Blocks::ice(),
+        //         Biome::Ocean => Blocks::dirt(),
+        //         Biome::LukewarmOcean => Blocks::dirt(),
+        //         Biome::WarmOcean => Blocks::dirt(),
+        //         Biome::DeepDark => Blocks::dirt(),
+        //         Biome::LushCaves => Blocks::dirt(),
+        //         Biome::DripstoneCaves => Blocks::dirt(),
+        //         Biome::FrozenRiver => Blocks::ice(),
+        //         Biome::River => Blocks::dirt(),
+        //         Biome::StonyShore => Blocks::sand(),
+        //         Biome::Badlands => Blocks::dirt(),
+        //         Biome::Beach => Blocks::sand(),
+        //         Biome::SnowyBeach => Blocks::sand(),
+        //         Biome::Desert => Blocks::sand(),
+        //         Biome::WoodedBadlands => Blocks::dirt(),
+        //         Biome::SnowySlopes => Blocks::sand(),
+        //         Biome::Plateau => Blocks::dirt(),
+        //         Biome::JaggedPeaks => Blocks::dirt(),
+        //         Biome::StonyPeaks => Blocks::dirt(),
+        //         Biome::Plains => Blocks::dirt(),
+        // };
+
+        let exemple_height =
+            ((exemple_noise.get_noise(offset_x + dx as f32, offset_z + dz as f32) + 1.) * 0.5);
+
         // Placer les blocs dans le monde
-        let y = (height * MAX_GEN_HEIGHT as f32) as i32;
-        world.set_yrange(col, (dx, dz), y, 4, block);
+        let y = (exemple_height * MAX_GEN_HEIGHT  as f32 / 3.) as i32;
+        world.set_yrange(col, (dx, dz), y, 4, Blocks::dirt());
         world.set_yrange(col, (dx, dz), y - 4, 2, Blocks::stone());
         world.set_yrange(col, (dx, dz), y - 6, MAX_GEN_HEIGHT, Blocks::deepslate());
     }

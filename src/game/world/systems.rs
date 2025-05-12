@@ -9,6 +9,7 @@ pub fn init_world(mut commands: Commands) {
     commands.insert_resource(AmbientLight {
         color: Color::WHITE.into(),
         brightness: world_data_clone.light,
+        affects_lightmapped_meshes: true,
     });
 }
 

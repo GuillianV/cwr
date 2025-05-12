@@ -26,7 +26,7 @@ pub fn setup_gen_thread(
             loop {
                 let Some((col_pos, _)) = load_orders.try_write_arc().and_then(|mut ld| ld.pop())
                 else {
-                    yield_now();
+                    let _ = yield_now();
                     continue;
                 };
 

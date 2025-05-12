@@ -11,7 +11,7 @@ pub fn assign_load_area(
     mut query: Query<(Entity, &Transform, &Realm, &RenderDistance)>,
     mut loading_state_next_state: ResMut<NextState<LoadingState>>,
 ) {
-    let (player, transform, realm, render_dist) = query.single_mut();
+    let Ok((player, transform, realm, render_dist)) = query.single_mut() else { return; };
     let col = ColPos::from((transform.translation, *realm));
     let old_load_area = PlayerArea::empty();
     let new_load_area = PlayerArea::new(col, *render_dist);

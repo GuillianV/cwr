@@ -6,8 +6,8 @@ edition = "2024"
 
 
 [dependencies]
-bevy = "0.15.3"
-bevy_dev_tools  = "0.15.3"
+bevy = "0.16"
+bevy_dev_tools  = "0.16"
 binary-greedy-meshing = "0.3.6"
 itertools = "*"
 dashmap = "*"

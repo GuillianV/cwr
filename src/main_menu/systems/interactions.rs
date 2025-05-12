@@ -11,7 +11,7 @@ pub fn on_click(
     mut app_state_next_state: ResMut<NextState<AppState>>,
     mut loading_state_next_state: ResMut<NextState<LoadingState>>,
 ) {
-    if let Ok(mut color) = button_query.get_mut(click.entity()) {
+    if let Ok(mut color) = button_query.get_mut(click.target()) {
         *color = PRESSED_BUTTON.into();
         app_state_next_state.set(AppState::Loading);
         loading_state_next_state.set(LoadingState::LoadingPlayerArea);
@@ -22,7 +22,7 @@ pub fn on_hover(
     hover: Trigger<Pointer<Over>>,
     mut button_query: Query<&mut BackgroundColor, With<PlayButton>>,
 ) {
-    if let Ok(mut color) = button_query.get_mut(hover.entity()) {
+    if let Ok(mut color) = button_query.get_mut(hover.target()) {
         *color = HOVERED_BUTTON.into();
     }
 }
@@ -31,7 +31,7 @@ pub fn on_hover_out(
     hover: Trigger<Pointer<Out>>,
     mut button_query: Query<&mut BackgroundColor, With<PlayButton>>,
 ) {
-    if let Ok(mut color) = button_query.get_mut(hover.entity()) {
+    if let Ok(mut color) = button_query.get_mut(hover.target()) {
         *color = NORMAL_BUTTON.into();
     }
 }
