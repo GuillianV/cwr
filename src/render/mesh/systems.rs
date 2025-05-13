@@ -119,7 +119,7 @@ pub fn pull_meshes(
                             * CHUNK_S1 as f32,
                     ),
                     OcclusionCulling,
-                    // Visibility::Hidden,
+                    Visibility::Hidden,
                     chunk_aabb,
                     lod,
                     face,

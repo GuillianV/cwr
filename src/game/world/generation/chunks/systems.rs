@@ -6,6 +6,7 @@ use bevy::{
     math::Vec3A,
     render::{
         camera::Camera,
+        experimental::occlusion_culling::OcclusionCulling,
         primitives::{Aabb, Frustum, Sphere},
         view::{NoFrustumCulling, Visibility},
     },
@@ -20,12 +21,12 @@ use crate::game::{
 
 use super::components::{face_visible, intersects_aabb};
 
-pub fn chunk_culling(
-    view_query: Query<(&Frustum, &Camera, &GlobalTransform), Changed<Frustum>>,
+pub fn chunk_culling_render_distance(
+    view_query: Query<(&Camera, &GlobalTransform), Changed<Frustum>>,
     q_render: Query<&RenderDistance, With<Player>>,
-    mut chunk_query: Query<(&mut Visibility, &Transform, &Face, &Aabb), With<NoFrustumCulling>>,
+    mut chunk_query: Query<(&mut Visibility, &Transform), With<OcclusionCulling>>,
 ) {
-    for (frustum, camera, gtransform) in view_query.iter() {
+    for (camera, gtransform) in view_query.iter() {
         if !camera.is_active {
             continue;
         }
@@ -41,26 +42,14 @@ pub fn chunk_culling(
 
         // TODO: make it less dumb when having multiple cameras
         chunk_query.par_iter_mut().for_each(|item| {
-            let (mut visibility, coord, face, aabb) = item;
-            let center = Vec3A::from(coord.translation) + aabb.center;
-            let world_sphere = Sphere {
-                center,
-                radius: aabb.half_extents.length(),
-            };
-            let world_aabb = Aabb {
-                center,
-                half_extents: aabb.half_extents,
-            };
+            let (mut visibility, coord) = item;
+
             total.fetch_add(1, Ordering::AcqRel);
 
             let distance_vec = (&chunk_cam_pos - chunk_pos(coord.translation));
             let distance = distance_vec.x.abs() + distance_vec.z.abs();
 
-            *visibility = if !face_visible(&chunk_cam_pos, chunk_pos(coord.translation), face)
-                || !frustum.intersects_sphere(&world_sphere, false)
-                || !intersects_aabb(frustum, &world_aabb)
-                || distance > render_dist.0.into()
-            {
+            *visibility = if distance > (render_dist.0 as f32  * 1.44) as i64  {
                 Visibility::Hidden
             } else {
                 visible.fetch_add(1, Ordering::AcqRel);

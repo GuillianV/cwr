@@ -23,7 +23,7 @@ pub fn init_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let render_dist = 32 ;
+    let render_dist = 64 ;
     commands.spawn((
         Player {
             position: Vec3::new(0.0, 2.0, 0.0),
@@ -67,7 +67,7 @@ pub fn init_player(
         DistanceFog {
             color: Color::srgb(0.9, 0.9, 0.9),
             falloff: FogFalloff::Linear {
-                start: 64. * (render_dist - 8) as f32,
+                start: 64. * (render_dist - 4) as f32,
                 end:  64. * (render_dist) as f32,
             },
             ..Default::default()
@@ -119,7 +119,7 @@ pub fn player_set_camera_movement(
             if let Ok(player) = q_player_data.get_single_mut() {
                 let position = Vec3::new(
                     player.position.x + x,
-                    settings.camera_height,
+                    player.position.y + settings.camera_height,
                     player.position.z + z,
                 );
                 camera_data.position = position;
@@ -150,11 +150,15 @@ pub fn player_set_movement(
         let backward = KeyCode::KeyS;
         let left = KeyCode::KeyA;
         let right = KeyCode::KeyD;
+        let up = KeyCode::Space;
+        let down = KeyCode::ShiftLeft;
 
         let forward_pressed = keyboard_input.pressed(forward);
         let backward_pressed = keyboard_input.pressed(backward);
         let left_pressed = keyboard_input.pressed(left);
         let right_pressed = keyboard_input.pressed(right);
+        let up_pressed = keyboard_input.pressed(up);
+        let down_pressed = keyboard_input.pressed(down);
 
         let input_direction = if forward_pressed && left_pressed {
             Vec2::new(1., -1.)
@@ -176,6 +180,14 @@ pub fn player_set_movement(
             Vec2::ZERO
         };
 
+        let y_input_direction = if up_pressed {
+            1.
+        } else if down_pressed {
+            -1.
+        } else {
+            0.
+        };
+
         let normalized_input_direction = input_direction.normalize_or_zero();
         let deg_input_direction = vec2_to_degrees(normalized_input_direction);
 
@@ -191,7 +203,7 @@ pub fn player_set_movement(
 
         let new_position: Vec3 = Vec3::new(
             old_position.x + combined_direction.0 * player.speed * time.delta_secs(),
-            player.position.y,
+            old_position.y + y_input_direction * player.speed * 2. * time.delta_secs(),
             old_position.z + combined_direction.1 * player.speed * time.delta_secs(),
         );
 
